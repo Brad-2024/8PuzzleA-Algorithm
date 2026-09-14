@@ -1,5 +1,6 @@
 import random
-
+from search import a_star
+import copy
 
 class Board:
     def __init__(self, initial_configuration):
@@ -7,9 +8,18 @@ class Board:
         :param initial_configuration: {{"_", "1", "2"}, {"3", "4", "5"}, {"6", "7", "8"}}
         """
         self.configuration = initial_configuration
+        self.initial_configuration = initial_configuration
 
-    def find_neighbors(self):
-        pass
+    def state_key(self):
+        return tuple(tuple(row) for row in self.configuration)
+
+    def __eq__(self, other):
+        if not isinstance(other, Board):
+            return NotImplemented
+        return self.state_key() == other.state_key()
+
+    def __hash__(self):
+        return hash(self.state_key())
 
     def move_tile(self, start_tile, move_tile):
         x = start_tile[0]
@@ -29,6 +39,7 @@ class Board:
             return True
 
     def find_empty_neighbor(self):
+        empty_neighbors = []
         for i in range(3):
             for j in range(3):
                 if self.configuration[i][j] == "_":
@@ -37,12 +48,13 @@ class Board:
         empty_x = empty_tile[0]
         empty_y = empty_tile[1]
         list_of_neighbors = [(empty_x+1, empty_y), (empty_x-1,empty_y), (empty_x, empty_y+1), (empty_x, empty_y-1)]
+
         for i in list_of_neighbors:
             if self.is_valid_tile(i[0], i[1]):
-                pass
+                empty_neighbors.append(i)
             else:
-                list_of_neighbors.remove(i)
-        return list_of_neighbors
+                pass
+        return empty_neighbors
 
     def find_empty_tile(self):
         for i in range(3):
@@ -74,16 +86,19 @@ class Board:
     def get_puzzle_neighbors(self):
         empty_tile = self.find_empty_tile()
         empty_neighbors = self.find_empty_neighbor()
+        print(f"Empty tile: {empty_tile}")
+        print(f"Empty neighbors: {empty_neighbors}")
         boards = []
         for neighbor in empty_neighbors:
-            new_board = self.configuration.copy()  # Create a copy of the current configuration
+            new_board = copy.deepcopy(self.configuration)  # Create a copy of the current configuration
             new_board[empty_tile[0]][empty_tile[1]] = new_board[neighbor[0]][neighbor[1]]
             new_board[neighbor[0]][neighbor[1]] = "_"
             boards.append(Board(new_board))
         return boards
-
 # main function
 if __name__ == "__main__":
     initial_configuration = [["_", "1", "2"], ["3", "4", "5"], ["6", "7", "8"]]
     board = Board(initial_configuration)
     board.randomize()
+
+    a_star([board], "misplaced")
