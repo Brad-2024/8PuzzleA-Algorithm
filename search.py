@@ -1,42 +1,57 @@
 # from board import Board
 import heapq
+import itertools
 import random
 
 def a_star(puzzles, heuristic):
     iterations = 0
     frontier = []
-    heapq.heappush(frontier, (misplaced_heuristic(puzzles[0]), random.random() * 100, puzzles[0]))
+    frontier_keys = set()
+    counter = itertools.count()
+    key0 = puzzles[0].state_key()
+    
+    heapq.heappush(frontier, (0 + misplaced_heuristic(puzzles[0]), next(counter), puzzles[0]))
     nodes_explored = 0
-    explored = []
+    frontier_keys.add(key0)
+    explored = set()
 
-    goal = [["_","1","2"], ["3","4","5"], ["6","7","8"]]  
+    GOAL = [["_","1","2"], ["3","4","5"], ["6","7","8"]] 
+
     while(True): 
         if frontier == []:
             return 
         
-        h, r, node  = heapq.heappop(frontier)
+        f, t, node  = heapq.heappop(frontier)
+        node_key = node.state_key()
+        frontier_keys.remove(node_key)
 
         # print(f"Board after iteration {iterations}:")
         # node.print_board()
 
-        if node.configuration == goal:
+        if node.configuration == GOAL:
             print(f"Goal state reached for {heuristic} heuristic after {iterations} iterations and {nodes_explored} nodes explored.")
+            node.print_board()
             return node
 
-        explored.append(node)
+        explored.add(node_key)
+
         neighbors = node.get_puzzle_neighbors()
+        nodes_explored += len(neighbors)
 
         for neighbor in neighbors:
-            if neighbor not in frontier and neighbor not in explored:
+            neighbor_key = neighbor.state_key()
+            if neighbor_key not in frontier_keys and neighbor_key not in explored:
                 neighbor.depth = node.depth + 1
                 if heuristic == "misplaced":
-                    heapq.heappush(frontier, (neighbor.depth + misplaced_heuristic(neighbor), random.random() * 100, neighbor))
+                    f = neighbor.depth + misplaced_heuristic(neighbor)
                 elif heuristic == "manhattan":
-                    heapq.heappush(frontier, (neighbor.depth + manhattan_heuristic(neighbor), random.random() * 100, neighbor))
+                    f = neighbor.depth + manhattan_heuristic(neighbor)
                 else: 
-                    heapq.heappush(frontier, (45.8, random.random() * 100, neighbor))
+                    f = neighbor.depth
+
+                heapq.heappush(frontier, (f, next(counter), neighbor))
+                frontier_keys.add(neighbor_key)
         iterations += 1
-        nodes_explored += len(neighbors)
 
 def misplaced_heuristic(node):
     # Implement the misplaced tiles heuristic

@@ -12,11 +12,10 @@ class Board:
         self.initial_configuration = initial_configuration
 
     def state_key(self):
+        # Return a hashable representation of the board's state through converting the configuration to a tuple of tuples
         return tuple(tuple(row) for row in self.configuration)
 
     def __eq__(self, other):
-        if not isinstance(other, Board):
-            return NotImplemented
         return self.state_key() == other.state_key()
 
     def __hash__(self):
