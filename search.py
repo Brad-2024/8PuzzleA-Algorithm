@@ -20,7 +20,7 @@ def a_star(puzzles, heuristic):
         node.print_board()
 
         if node.configuration == goal:
-            print(f"Goal state reached after {iterations} iterations and {nodes_explored} nodes explored.")
+            print(f"Goal state reached for {heuristic} heuristic after {iterations} iterations and {nodes_explored} nodes explored.")
             return node
 
         explored.append(node)
@@ -53,9 +53,12 @@ def manhattan_heuristic(node):
     distance = 0
     for i in range(3):
         for j in range(3):
-            tile = node[i][j]
-            target_x = (tile - 1) // 3
-            target_y = (tile - 1) % 3
-            distance += abs(i - target_x) + abs(j - target_y)
+            tile = node.configuration[i][j]
+            if tile == "_":
+                continue
+            t = int(tile)
+            target_y = (t) // 3 
+            target_x = (t) % 3 
+            distance += abs(i - target_y) + abs(j - target_x)
     return distance
 

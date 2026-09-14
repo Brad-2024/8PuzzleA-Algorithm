@@ -102,3 +102,5 @@ if __name__ == "__main__":
     board.randomize()
 
     a_star([board], "misplaced")
+    a_star([board], "manhattan")
+
