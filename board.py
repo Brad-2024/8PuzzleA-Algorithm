@@ -52,7 +52,7 @@ class Board:
 
     def randomize(self):
         #random_num_moves = random.randint(100, 10000)
-        random_num_moves = random.randint(1, 10)
+        random_num_moves = random.randint(100, 10000)
 
         i = 0
 
@@ -63,8 +63,8 @@ class Board:
             success = self.move_tile(empty_tile, random_neighbor)
             if success:
                 i += 1
-            print(f"Board after {i} moves:")
-            self.print_board()
+            # print(f"Board after {i} moves:")
+            # self.print_board()
 
 
     def print_board(self):
