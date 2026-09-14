@@ -8,6 +8,7 @@ class Board:
         :param initial_configuration: {{"_", "1", "2"}, {"3", "4", "5"}, {"6", "7", "8"}}
         """
         self.configuration = initial_configuration
+        self.depth = 0
         self.initial_configuration = initial_configuration
 
     def state_key(self):
@@ -64,7 +65,8 @@ class Board:
 
     def randomize(self):
         #random_num_moves = random.randint(100, 10000)
-        random_num_moves = random.randint(1, 10)
+        random_num_moves = random.randint(100, 10000)
+        print(f"Randomizing the board with {random_num_moves} moves.")
 
         i = 0
 
@@ -75,8 +77,8 @@ class Board:
             success = self.move_tile(empty_tile, random_neighbor)
             if success:
                 i += 1
-            print(f"Board after {i} moves:")
-            self.print_board()
+            # print(f"Board after {i} moves:")
+            # self.print_board()
 
 
     def print_board(self):
@@ -86,8 +88,8 @@ class Board:
     def get_puzzle_neighbors(self):
         empty_tile = self.find_empty_tile()
         empty_neighbors = self.find_empty_neighbor()
-        print(f"Empty tile: {empty_tile}")
-        print(f"Empty neighbors: {empty_neighbors}")
+        # print(f"Empty tile: {empty_tile}")
+        # print(f"Empty neighbors: {empty_neighbors}")
         boards = []
         for neighbor in empty_neighbors:
             new_board = copy.deepcopy(self.configuration)  # Create a copy of the current configuration
@@ -100,6 +102,8 @@ if __name__ == "__main__":
     initial_configuration = [["_", "1", "2"], ["3", "4", "5"], ["6", "7", "8"]]
     board = Board(initial_configuration)
     board.randomize()
+    print("Initial board configuration:")
+    board.print_board()
 
     a_star([board], "misplaced")
     a_star([board], "manhattan")

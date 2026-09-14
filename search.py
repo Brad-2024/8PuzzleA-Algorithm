@@ -16,8 +16,8 @@ def a_star(puzzles, heuristic):
         
         h, r, node  = heapq.heappop(frontier)
 
-        print(f"Board after iteration {iterations}:")
-        node.print_board()
+        # print(f"Board after iteration {iterations}:")
+        # node.print_board()
 
         if node.configuration == goal:
             print(f"Goal state reached for {heuristic} heuristic after {iterations} iterations and {nodes_explored} nodes explored.")
@@ -27,12 +27,12 @@ def a_star(puzzles, heuristic):
         neighbors = node.get_puzzle_neighbors()
 
         for neighbor in neighbors:
-
             if neighbor not in frontier and neighbor not in explored:
+                neighbor.depth = node.depth + 1
                 if heuristic == "misplaced":
-                    heapq.heappush(frontier, (misplaced_heuristic(neighbor), random.random() * 100, neighbor))
+                    heapq.heappush(frontier, (neighbor.depth + misplaced_heuristic(neighbor), random.random() * 100, neighbor))
                 elif heuristic == "manhattan":
-                    heapq.heappush(frontier, (manhattan_heuristic(neighbor), random.random() * 100, neighbor))
+                    heapq.heappush(frontier, (neighbor.depth + manhattan_heuristic(neighbor), random.random() * 100, neighbor))
                 else: 
                     heapq.heappush(frontier, (45.8, random.random() * 100, neighbor))
         iterations += 1
