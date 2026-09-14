@@ -71,8 +71,18 @@ class Board:
         for row in self.configuration:
             print(row)
 
-# main function
+    def get_puzzle_neighbors(self):
+        empty_tile = self.find_empty_tile()
+        empty_neighbors = self.find_empty_neighbor()
+        boards = []
+        for neighbor in empty_neighbors:
+            new_board = self.configuration.copy()  # Create a copy of the current configuration
+            new_board[empty_tile[0]][empty_tile[1]] = new_board[neighbor[0]][neighbor[1]]
+            new_board[neighbor[0]][neighbor[1]] = "_"
+            boards.append(Board(new_board))
+        return boards
 
+# main function
 if __name__ == "__main__":
     initial_configuration = [["_", "1", "2"], ["3", "4", "5"], ["6", "7", "8"]]
     board = Board(initial_configuration)
