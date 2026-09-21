@@ -33,8 +33,10 @@ def a_star(puzzle, heuristic):
 
     if heuristic == "misplaced": # calculate the heuristic value based on the chosen heuristic
         h = misplaced_heuristic(puzzle.configuration)
-    else:
+    elif heuristic == "manhattan":
         h = manhattan_heuristic(puzzle.configuration)
+    else:
+        h = relaxed_adjacency_heuristic(puzzle.configuration)
 
     heapq.heappush(frontier, (h, next(tie_breaker), 0, puzzle)) # put the initial state into the priority queue
 
