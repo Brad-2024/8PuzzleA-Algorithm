@@ -193,12 +193,16 @@ def relaxed_adjacency_heuristic(configuration):
     while temp_config != goal_state:
         if empty_tile == true_coords["_"]:
             out_of_place = out_of_place_tiles(temp_config)
-            swap_tiles(temp_config, empty_tile, out_of_place)
+            temp_config = swap_tiles(temp_config, empty_tile, out_of_place[0])
+            empty_tile = out_of_place[0]
         else:
             true_tile = true_values[empty_tile]
             true_tile_coords = find_tile_coordinates(temp_config, true_tile)
-            swap_tiles(temp_config, empty_tile, true_tile_coords)
+            temp_config = swap_tiles(temp_config, empty_tile, true_tile_coords)
+            empty_tile = true_tile_coords
         num_swaps += 1
+
+    return num_swaps
 
 
 def possible_boards(board):
@@ -227,14 +231,23 @@ if __name__ == "__main__":
         [6, 7, 8]
     ]
 
-    for i in range(5):
-        board = Board(initial_configuration)
-        board.randomize()
+    # for i in range(5):
+    #     board = Board(initial_configuration)
+    #     board.randomize()
+    #
+    #     a_star(board, "misplaced")
+    #
+    # for i in range(5):
+    #     board = Board(initial_configuration)
+    #     board.randomize()
+    #
+    #     a_star(board, "manhattan")
 
-        a_star(board, "misplaced")
+    example_configuration = [
+        ["_", 2, 1],
+        [3, 4, 5],
+        [6, 7, 8]
+    ]
 
-    for i in range(5):
-        board = Board(initial_configuration)
-        board.randomize()
-
-        a_star(board, "manhattan")
+    num_swaps = relaxed_adjacency_heuristic(example_configuration)
+    print(f"Relaxed adjacency heuristic value: {num_swaps}")
