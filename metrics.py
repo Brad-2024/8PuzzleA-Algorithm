@@ -115,10 +115,13 @@ def avg_metrics(f, data):
 
     for i in range(3):
         for j in range(12):
-            # data_sum = sum(data[i][j])
-            cost_sum, efb_sum = sum(data[i][j][0]), sum(data[i][j][1])
-            avg_cost, avg_efb = cost_sum // len(data[i][j]), efb_sum / len(data[i][j])
-            averages[i][j] = (avg_cost, avg_efb)
+            cost_sum = sum(cost for cost, ebf in data[i][j])
+            ebf_sum = sum(ebf for cost, ebf in data[i][j])
+
+            avg_cost = int(cost_sum // len(data[i][j]))
+            avg_ebf = ebf_sum / len(data[i][j])
+
+            averages[i][j] = (avg_cost, avg_ebf)
             heuristic = index_to_heuristic[i]
             depth = index_to_depth[j]
             print(f"Depth: {depth}, Heuristic: {heuristic}, Avg. Nodes Expanded: {avg_cost}, Avg. Effective Branching Factor: {round(avg_ebf, 2)}")
