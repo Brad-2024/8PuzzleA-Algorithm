@@ -4,11 +4,26 @@ from datetime import datetime
 from scipy.optimize import brentq
 
 
+def effective_branching_factor(nodes_generated, depth):
+    """
+    Calculate the effective branching factor based on the depth and number of nodes generated.
+    :param nodes_generated: the number of nodes that were generated in the search
+    :param depth: the depth of the goal state in the search
+    :return: the effective branching factor of the search
+    """
     def f(b):
         return sum(b**i for i in range(depth+1)) - (nodes_generated+1)
     return brentq(f, 0, nodes_generated+1)
 
 def search_metrics(f):
+    """
+    Calculate the number of nodes generated and the effective branching factor for 100 iterations
+    of each depth [6,8,10,12,14,16,18,20,22,24,26,28], and each heuristic [misplaced, manhattan, relaxed].
+    :param f: the file to write the data to
+    :return: a list of the # of nodes generated and effective branching factor
+    for all depths and all heuristics
+
+    """
     data = [[
         [],
         [],
@@ -68,6 +83,12 @@ def search_metrics(f):
     return data
 
 def avg_metrics(f, data):
+    """
+    Calculate the average metrics for each depth of each heuristic.
+    :param f: the file to write the data to
+    :param data: the data to calculate the averages of
+    :return: a list of the average metrics for each depth of each heuristic
+    """
     averages = [[
         [],
         [],
@@ -129,6 +150,11 @@ def avg_metrics(f, data):
     return averages
 
 def run_metrics():
+    """
+    Run the search algorithm 100 times for each depth and each heuristic, also taking
+    the average of the 100 iterations.
+    :return: the data list and average data list
+    """
     filename = f"data/{datetime.now().strftime("%Y-%m-%d %H-%M-%S")}_metrics.txt"
     with open(filename, "w") as f:
         data = search_metrics(f)
