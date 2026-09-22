@@ -61,10 +61,10 @@ def search_metrics(f):
                 boards = Board.generate_boards_from_depth(28)[index_to_depth[j]]
                 board = random.choice(boards)
                 nodes_expanded, depth = a_star(board, index_to_heuristic[i])
-                efb = effective_branching_factor(nodes_expanded, depth)
-                print(f"Depth: {depth}, Heuristic: {index_to_heuristic[i]}, Nodes Expanded: {nodes_expanded}, Effective Branching Factor: {round(efb, 2)}")
-                data[i][j].append((nodes_expanded, efb))
-                f.write(f"Depth: {depth}, Heuristic: {index_to_heuristic[i]}, Nodes Expanded: {nodes_expanded}, Effective Branching Factor: {round(efb, 2)}")
+                ebf = effective_branching_factor(nodes_expanded, depth)
+                print(f"Depth: {depth}, Heuristic: {index_to_heuristic[i]}, Nodes Expanded: {nodes_expanded}, Effective Branching Factor: {round(ebf, 2)}")
+                data[i][j].append((nodes_expanded, ebf))
+                f.write(f"Depth: {depth}, Heuristic: {index_to_heuristic[i]}, Nodes Expanded: {nodes_expanded}, Effective Branching Factor: {round(ebf, 2)}\n")
 
     return data
 
@@ -121,8 +121,8 @@ def avg_metrics(f, data):
             averages[i][j] = (avg_cost, avg_efb)
             heuristic = index_to_heuristic[i]
             depth = index_to_depth[j]
-            print(f"Depth: {depth}, Heuristic: {heuristic}, Avg. Nodes Expanded: {avg_cost}, Avg. Effective Branching Factor: {round(avg_efb, 2)}")
-            f.write(f"Depth: {depth}, Heuristic: {heuristic}, Avg. Nodes Expanded: {avg_cost}, Avg. Effective Branching Factor: {round(avg_efb, 2)}")
+            print(f"Depth: {depth}, Heuristic: {heuristic}, Avg. Nodes Expanded: {avg_cost}, Avg. Effective Branching Factor: {round(avg_ebf, 2)}")
+            f.write(f"Depth: {depth}, Heuristic: {heuristic}, Avg. Nodes Expanded: {avg_cost}, Avg. Effective Branching Factor: {round(avg_ebf, 2)}\n")
 
     return averages
 
