@@ -101,7 +101,7 @@ class Board:
         empty_neighbors = self.find_empty_neighbor()
         boards = []
         for neighbor in empty_neighbors:
-            new_board = self.configuration.copy()  # Create a copy of the current configuration
+            new_board = [row[:] for row in self.configuration]  # Create a copy of the current configuration
             new_board[empty_tile[0]][empty_tile[1]] = new_board[neighbor[0]][neighbor[1]]
             new_board[neighbor[0]][neighbor[1]] = "_"
             boards.append(Board(new_board))
