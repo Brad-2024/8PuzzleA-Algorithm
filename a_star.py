@@ -21,9 +21,9 @@ def a_star(puzzle, heuristic):
     :param heuristic: the heuristic to be used ("misplaced" or "manhattan")
     :return: the number of nodes explored to reach the goal state
     """
-    goal_state = [["_", 1, 2], # the goal state of the 8-puzzle
-                  [3, 4, 5],
-                  [6, 7, 8]]
+    goal_state = [["_", "1", "2"], # the goal state of the 8-puzzle
+                  ["3", "4", "5"],
+                  ["6", "7", "8"]]
 
     explored = set() # initialize the explored set to keep track of visited states
 
@@ -90,9 +90,9 @@ def misplaced_heuristic(configuration):
     :param configuration: the current configuration of the board
     :return: the number of misplaced tiles
     """
-    goal_state = [["_", 1, 2],
-                  [3, 4, 5],
-                  [6, 7, 8]]
+    goal_state = [["_", "1", "2"],
+                  ["3", "4", "5"],
+                  ["6", "7", "8"]]
 
     count_misplaced = 0
 
@@ -120,8 +120,8 @@ def manhattan_heuristic(configuration):
             if tile == "_":
                 continue
 
-            target_x = tile // 3
-            target_y = tile % 3
+            target_x = int(tile) // 3
+            target_y = int(tile) % 3
 
             distance += abs(i - target_x) + abs(j - target_y)
 
@@ -146,9 +146,9 @@ def out_of_place_tiles(configuration):
     :param configuration: the current configuration of the board
     :return: a list of the out-of-place tiles
     """
-    goal_state = [["_", 1, 2],
-                  [3, 4, 5],
-                  [6, 7, 8]]
+    goal_state = [["_", "1", "2"],
+                  ["3", "4", "5"],
+                  ["6", "7", "8"]]
 
     out_of_place = []
 
@@ -181,14 +181,14 @@ def relaxed_adjacency_heuristic(configuration):
     """
     num_swaps = 0
 
-    goal_state = [["_", 1, 2],[3, 4, 5],[6, 7, 8]] # the goal state of the 8-puzzle
+    goal_state = [["_", "1", "2"],["3", "4", "5"],["6", "7", "8"]] # the goal state of the 8-puzzle
 
     temp_config = [row[:] for row in configuration] # Create a copy of the configuration
 
     empty_tile = None
 
-    true_coords = {"_": (0, 0), 1: (0, 1), 2: (0, 2), 3: (1, 0), 4: (1, 1), 5: (1, 2), 6: (2, 0), 7: (2, 1), 8: (2, 2)}
-    true_values = {(0,0): "_", (0,1): 1, (0,2): 2, (1,0): 3, (1,1): 4, (1,2): 5, (2,0): 6, (2,1): 7, (2,2): 8}
+    true_coords = {"_": (0, 0), "1": (0, 1), "2": (0, 2), "3": (1, 0), "4": (1, 1), "5": (1, 2), "6": (2, 0), "7": (2, 1), "8": (2, 2)}
+    true_values = {(0,0): "_", (0,1): "1", (0,2): "2", (1,0): "3", (1,1): "4", (1,2): "5", (2,0): "6", (2,1): "7", (2,2): "8"}
 
     empty_tile = find_tile_coordinates(temp_config, "_")
 
@@ -228,9 +228,9 @@ def possible_boards(board):
 
 if __name__ == "__main__":
     initial_configuration = [
-        ["_", 1, 2],
-        [3, 4, 5],
-        [6, 7, 8]
+        ["_", "1", "2"],
+        ["3", "4", "5"],
+        ["6", "7", "8"]
     ]
 
     # for i in range(5):
@@ -246,9 +246,9 @@ if __name__ == "__main__":
     #     a_star(board, "manhattan")
 
     example_configuration = [
-        ["_", 2, 1],
-        [3, 4, 5],
-        [6, 7, 8]
+        ["_", "2", "1"],
+        ["3", "4", "5"],
+        ["6", "7", "8"]
     ]
 
     num_swaps = relaxed_adjacency_heuristic(example_configuration)
