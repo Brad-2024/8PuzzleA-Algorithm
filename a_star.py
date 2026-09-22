@@ -51,7 +51,6 @@ def a_star(puzzle, heuristic):
             continue
 
         explored.add(state) # add the node to the explored set
-        num_nodes += 1
 
         if node.configuration == goal_state: # check if the goal state has been reached
             print(
@@ -62,6 +61,8 @@ def a_star(puzzle, heuristic):
             return num_nodes, g_cost + 1
 
         children = possible_boards(node) # get all the children of the current node
+
+        num_nodes += len(children)
 
         for child in children:
             child_state = board_key(child)
