@@ -4,10 +4,9 @@ from datetime import datetime
 from scipy.optimize import brentq
 
 
-def effective_branching_factor(nodes_expanded, depth):
     def f(b):
-        return sum(b**i for i in range(depth+1)) - (nodes_expanded+1)
-    return brentq(f, 0, nodes_expanded+1)
+        return sum(b**i for i in range(depth+1)) - (nodes_generated+1)
+    return brentq(f, 0, nodes_generated+1)
 
 def search_metrics(f):
     data = [[
