@@ -40,7 +40,7 @@ def a_star(puzzle, heuristic):
 
     heapq.heappush(frontier, (h, next(tie_breaker), 0, puzzle)) # put the initial state into the priority queue
 
-    num_nodes = 0
+    num_nodes = 1
 
     while frontier:
         priority, _, g_cost, node = heapq.heappop(frontier) # pop the node with lowest priority
@@ -53,12 +53,12 @@ def a_star(puzzle, heuristic):
         explored.add(state) # add the node to the explored set
 
         if node.configuration == goal_state: # check if the goal state has been reached
-            print(
-                f"Goal state reached! "
-                f"Number of nodes explored: {num_nodes} "
-                f"Depth of the solution: {g_cost + 1}"
-            )
-            return num_nodes, g_cost + 1
+            # print(
+            #     f"Goal state reached! "
+            #     f"Number of nodes explored: {num_nodes} "
+            #     f"Depth of the solution: {g_cost + 1}"
+            # )
+            return num_nodes, g_cost
 
         children = possible_boards(node) # get all the children of the current node
 
