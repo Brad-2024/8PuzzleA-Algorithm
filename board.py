@@ -7,7 +7,7 @@ class Board:
     """
     def __init__(self, initial_configuration):
         """
-        :param initial_configuration: ex. {{"_", "1", "2"}, {"3", "4", "5"}, {"6", "7", "8"}}
+        :param initial_configuration: ex. [["_", "1", "2"], ["3", "4", "5"], ["6", "7", "8"]]
         """
         self.configuration = initial_configuration
 

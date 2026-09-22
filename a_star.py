@@ -33,8 +33,10 @@ def a_star(puzzle, heuristic):
 
     if heuristic == "misplaced": # calculate the heuristic value based on the chosen heuristic
         h = misplaced_heuristic(puzzle.configuration)
-    else:
+    elif heuristic == "manhattan":
         h = manhattan_heuristic(puzzle.configuration)
+    else:
+        h = relaxed_adjacency_heuristic(puzzle.configuration)
 
     heapq.heappush(frontier, (h, next(tie_breaker), 0, puzzle)) # put the initial state into the priority queue
 
@@ -125,6 +127,85 @@ def manhattan_heuristic(configuration):
 
     return distance
 
+def find_tile_coordinates(configuration, tile):
+    """
+    Find the coordinates of a specific tile in the given configuration.
+    :param configuration: the current configuration of the board
+    :param tile: the tile to find
+    :return: the coordinates of the tile (row, column) or None if the tile is not found
+    """
+    for i in range(3):
+        for j in range(3):
+            if configuration[i][j] == tile:
+                return (i, j)
+    return None
+
+def out_of_place_tiles(configuration):
+    """
+    Get a list of the tiles that are out-of-place in the given configuration.
+    :param configuration: the current configuration of the board
+    :return: a list of the out-of-place tiles
+    """
+    goal_state = [["_", 1, 2],
+                  [3, 4, 5],
+                  [6, 7, 8]]
+
+    out_of_place = []
+
+    for i in range(3):
+        for j in range(3):
+            if configuration[i][j] != "_" and configuration[i][j] != goal_state[i][j]:
+                out_of_place.append((i, j))
+
+    return out_of_place
+
+def swap_tiles(configuration, tile1_coords, tile2_coords):
+    """
+    Swap two tiles.
+    :param configuration: the current configuration of the board
+    :param tile1_coords: the coordinates of the first tile to swap
+    :param tile2_coords: the coordinates of the second tile to swap
+    :return: the new configuration after swapping the tiles
+    """
+
+    x1, y1 = tile1_coords
+    x2, y2 = tile2_coords
+    configuration[x1][y1], configuration[x2][y2] = configuration[x2][y2], configuration[x1][y1]
+    return configuration
+
+def relaxed_adjacency_heuristic(configuration):
+    """
+    Calculate the relaxed adjacency heuristic for the given configuration.
+    :param configuration: the current configuration of the board
+    :return: the relaxed adjacency heuristic value
+    """
+    num_swaps = 0
+
+    goal_state = [["_", 1, 2],[3, 4, 5],[6, 7, 8]] # the goal state of the 8-puzzle
+
+    temp_config = [row[:] for row in configuration] # Create a copy of the configuration
+
+    empty_tile = None
+
+    true_coords = {"_": (0, 0), 1: (0, 1), 2: (0, 2), 3: (1, 0), 4: (1, 1), 5: (1, 2), 6: (2, 0), 7: (2, 1), 8: (2, 2)}
+    true_values = {(0,0): "_", (0,1): 1, (0,2): 2, (1,0): 3, (1,1): 4, (1,2): 5, (2,0): 6, (2,1): 7, (2,2): 8}
+
+    empty_tile = find_tile_coordinates(temp_config, "_")
+
+    while temp_config != goal_state:
+        if empty_tile == true_coords["_"]:
+            out_of_place = out_of_place_tiles(temp_config)
+            temp_config = swap_tiles(temp_config, empty_tile, out_of_place[0])
+            empty_tile = out_of_place[0]
+        else:
+            true_tile = true_values[empty_tile]
+            true_tile_coords = find_tile_coordinates(temp_config, true_tile)
+            temp_config = swap_tiles(temp_config, empty_tile, true_tile_coords)
+            empty_tile = true_tile_coords
+        num_swaps += 1
+
+    return num_swaps
+
 
 def possible_boards(board):
     """
@@ -152,14 +233,23 @@ if __name__ == "__main__":
         [6, 7, 8]
     ]
 
-    for i in range(5):
-        board = Board(initial_configuration)
-        board.randomize()
+    # for i in range(5):
+    #     board = Board(initial_configuration)
+    #     board.randomize()
+    #
+    #     a_star(board, "misplaced")
+    #
+    # for i in range(5):
+    #     board = Board(initial_configuration)
+    #     board.randomize()
+    #
+    #     a_star(board, "manhattan")
 
-        a_star(board, "misplaced")
+    example_configuration = [
+        ["_", 2, 1],
+        [3, 4, 5],
+        [6, 7, 8]
+    ]
 
-    for i in range(5):
-        board = Board(initial_configuration)
-        board.randomize()
-
-        a_star(board, "manhattan")
+    num_swaps = relaxed_adjacency_heuristic(example_configuration)
+    print(f"Relaxed adjacency heuristic value: {num_swaps}")
