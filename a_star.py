@@ -35,7 +35,7 @@ def a_star(puzzle, heuristic):
         h = misplaced_heuristic(puzzle.configuration)
     elif heuristic == "manhattan":
         h = manhattan_heuristic(puzzle.configuration)
-    else:
+    elif heuristic == "relaxed":
         h = relaxed_adjacency_heuristic(puzzle.configuration)
 
     heapq.heappush(frontier, (h, next(tie_breaker), 0, puzzle)) # put the initial state into the priority queue
@@ -74,6 +74,8 @@ def a_star(puzzle, heuristic):
                     h = misplaced_heuristic(child.configuration)
                 elif heuristic == "manhattan":
                     h = manhattan_heuristic(child.configuration)
+                elif heuristic == "relaxed":
+                    h = relaxed_adjacency_heuristic(child.configuration)
                 else:
                     raise ValueError("Unknown heuristic")
 
