@@ -53,12 +53,11 @@ class Board:
         empty_x = empty_tile[0]
         empty_y = empty_tile[1]
         list_of_neighbors = [(empty_x+1, empty_y), (empty_x-1,empty_y), (empty_x, empty_y+1), (empty_x, empty_y-1)]
+        valid_neighbors = []
         for i in list_of_neighbors:
             if self.is_valid_tile(i[0], i[1]):
-                pass
-            else:
-                list_of_neighbors.remove(i)
-        return list_of_neighbors
+                valid_neighbors.append(i)
+        return valid_neighbors
 
     def find_empty_tile(self):
         """
