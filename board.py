@@ -1,4 +1,5 @@
 import random
+from collections import deque
 
 
 class Board:
@@ -53,12 +54,11 @@ class Board:
         empty_x = empty_tile[0]
         empty_y = empty_tile[1]
         list_of_neighbors = [(empty_x+1, empty_y), (empty_x-1,empty_y), (empty_x, empty_y+1), (empty_x, empty_y-1)]
+        valid_neighbors = []
         for i in list_of_neighbors:
             if self.is_valid_tile(i[0], i[1]):
-                pass
-            else:
-                list_of_neighbors.remove(i)
-        return list_of_neighbors
+                valid_neighbors.append(i)
+        return valid_neighbors
 
     def find_empty_tile(self):
         """
@@ -102,14 +102,55 @@ class Board:
         empty_neighbors = self.find_empty_neighbor()
         boards = []
         for neighbor in empty_neighbors:
-            new_board = self.configuration.copy()  # Create a copy of the current configuration
+            new_board = [row[:] for row in self.configuration]  # Create a copy of the current configuration
             new_board[empty_tile[0]][empty_tile[1]] = new_board[neighbor[0]][neighbor[1]]
             new_board[neighbor[0]][neighbor[1]] = "_"
             boards.append(Board(new_board))
         return boards
+
+    def configuration_to_tuple(self):
+        """
+        Converts the board configuration to a tuple of tuples.
+        :return: a tuple of tuples representing the board configuration
+        """
+        return tuple(tuple(row) for row in self.configuration)
+
+    @staticmethod
+    def generate_boards_from_depth(max_depth=28):
+        goal_state = [["_", "1", "2"], ["3", "4", "5"], ["6", "7", "8"]]
+
+        goal_board = Board(goal_state)
+
+        queue = deque()
+        queue.append((goal_board, 0))  # (board, current_depth)
+
+        visited = {goal_board.configuration_to_tuple()}  # Use a set to track visited configurations
+
+        boards_by_depth = {
+            depth: [] for depth in range(max_depth + 1)
+        }
+
+        while queue:
+            board, depth = queue.popleft()
+
+            boards_by_depth[depth].append(board)
+
+            if depth == max_depth:
+                continue
+
+            for neighbor in board.get_puzzle_neighbors():
+                key = neighbor.configuration_to_tuple()
+
+                if key not in visited:
+                    visited.add(key)
+                    queue.append((neighbor, depth + 1))
+
+        return boards_by_depth
 
 # main function
 if __name__ == "__main__":
     initial_configuration = [["_", "1", "2"], ["3", "4", "5"], ["6", "7", "8"]]
     board = Board(initial_configuration)
     board.randomize()
+
+
