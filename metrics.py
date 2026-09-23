@@ -24,61 +24,24 @@ def search_metrics(f):
     for all depths and all heuristics
 
     """
-    data = [[
-        [],
-        [],
-        [],
-        [],
-        [],
-        [],
-        [],
-        [],
-        [],
-        [],
-        [],
-        []
-    ], [
-        [],
-        [],
-        [],
-        [],
-        [],
-        [],
-        [],
-        [],
-        [],
-        [],
-        [],
-        []
-    ], [
-        [],
-        [],
-        [],
-        [],
-        [],
-        [],
-        [],
-        [],
-        [],
-        [],
-        [],
-        []
-    ]]
 
-    index_to_depth = {0: 6, 1: 8, 2: 10, 3: 12, 4: 14, 5: 16, 6: 18, 7: 20, 8: 22, 9: 24, 10: 26, 11: 28}
-    index_to_heuristic = {0: "misplaced", 1: "manhattan", 2: "relaxed"}
+    depths = list(range(6, 29, 2))
+    heuristics = ["misplaced", "manhattan", "relaxed"]
 
+    data = [[[] for _ in depths] for _ in heuristics]
 
-    for i in range(3):
-        for j in range(12):
-            for k in range(100):
-                boards = Board.generate_boards_from_depth(28)[index_to_depth[j]]
-                board = random.choice(boards)
-                nodes_expanded, depth = a_star(board, index_to_heuristic[i])
-                ebf = effective_branching_factor(nodes_expanded, depth)
-                print(f"Depth: {depth}, Heuristic: {index_to_heuristic[i]}, Nodes Expanded: {nodes_expanded}, Effective Branching Factor: {round(ebf, 2)}")
+    all_boards = Board.generate_boards_from_depth(28)
+
+    sampled_boards = {depth: random.choices(all_boards[depth], k=100) for depth in depths}
+
+    for i, heuristic in enumerate(heuristics):
+        for j, depth in enumerate(depths):
+            for board in sampled_boards[depth]:
+                nodes_expanded, solution_depth = a_star(board, heuristic)
+                ebf = effective_branching_factor(nodes_expanded, solution_depth)
                 data[i][j].append((nodes_expanded, ebf))
-                f.write(f"Depth: {depth}, Heuristic: {index_to_heuristic[i]}, Nodes Expanded: {nodes_expanded}, Effective Branching Factor: {round(ebf, 2)}\n")
+                print(f"Depth: {solution_depth}, Heuristic: {heuristic}, Nodes Expanded: {nodes_expanded}, Effective Branching Factor: {round(ebf, 2)}")
+                f.write(f"Depth: {solution_depth}, Heuristic: {heuristic}, Nodes Expanded: {nodes_expanded}, Effective Branching Factor: {round(ebf, 2)}\n")
 
     return data
 
@@ -89,52 +52,14 @@ def avg_metrics(f, data):
     :param data: the data to calculate the averages of
     :return: a list of the average metrics for each depth of each heuristic
     """
-    averages = [[
-        [],
-        [],
-        [],
-        [],
-        [],
-        [],
-        [],
-        [],
-        [],
-        [],
-        [],
-        []
-    ], [
-        [],
-        [],
-        [],
-        [],
-        [],
-        [],
-        [],
-        [],
-        [],
-        [],
-        [],
-        []
-    ], [
-        [],
-        [],
-        [],
-        [],
-        [],
-        [],
-        [],
-        [],
-        [],
-        [],
-        [],
-        []
-    ]]
 
-    index_to_depth = {0: 6, 1: 8, 2: 10, 3: 12, 4: 14, 5: 16, 6: 18, 7: 20, 8: 22, 9: 24, 10: 26, 11: 28}
-    index_to_heuristic = {0: "misplaced", 1: "manhattan", 2: "relaxed"}
+    depths = list(range(6, 29, 2))
+    heuristics = ["misplaced", "manhattan", "relaxed"]
 
-    for i in range(3):
-        for j in range(12):
+    averages = [[[] for _ in depths] for _ in heuristics]
+
+    for j, depth in enumerate(depths):
+        for i, heuristic in enumerate(heuristics):
             cost_sum = sum(cost for cost, ebf in data[i][j])
             ebf_sum = sum(ebf for cost, ebf in data[i][j])
 
@@ -142,8 +67,7 @@ def avg_metrics(f, data):
             avg_ebf = ebf_sum / len(data[i][j])
 
             averages[i][j] = (avg_cost, avg_ebf)
-            heuristic = index_to_heuristic[i]
-            depth = index_to_depth[j]
+
             print(f"Depth: {depth}, Heuristic: {heuristic}, Avg. Nodes Expanded: {avg_cost}, Avg. Effective Branching Factor: {round(avg_ebf, 2)}")
             f.write(f"Depth: {depth}, Heuristic: {heuristic}, Avg. Nodes Expanded: {avg_cost}, Avg. Effective Branching Factor: {round(avg_ebf, 2)}\n")
 
@@ -155,7 +79,7 @@ def run_metrics():
     the average of the 100 iterations.
     :return: the data list and average data list
     """
-    filename = f"data/{datetime.now().strftime("%Y-%m-%d %H-%M-%S")}_metrics.txt"
+    filename = f"data/{datetime.now().strftime('%Y-%m-%d %H-%M-%S')}_metrics.txt"
     with open(filename, "w") as f:
         data = search_metrics(f)
         avg_data = avg_metrics(f, data)
