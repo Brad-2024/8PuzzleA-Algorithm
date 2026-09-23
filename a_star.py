@@ -42,10 +42,15 @@ def a_star(puzzle, heuristic):
 
     num_nodes = 1
 
+    best_g = {board_key(puzzle): 0}
+
     while frontier:
         priority, _, g_cost, node = heapq.heappop(frontier) # pop the node with lowest priority
 
         state = board_key(node) # turn the board into a hashable representation
+
+        if g_cost != best_g[state]:
+            continue
 
         if state in explored: # skip if the node has already been explored
             continue
@@ -60,31 +65,38 @@ def a_star(puzzle, heuristic):
             # )
             return num_nodes, g_cost
 
-        children = possible_boards(node) # get all the children of the current node
+        children = node.get_puzzle_neighbors() # get all the children of the current node
 
         num_nodes += len(children)
 
         for child in children:
             child_state = board_key(child)
 
-            if child_state not in explored:
-                new_g = g_cost + 1 # calculate the new g cost for the child node
+            if child_state in explored:
+                continue
 
-                if heuristic == "misplaced": # calculate the heuristic value for the child node
-                    h = misplaced_heuristic(child.configuration)
-                elif heuristic == "manhattan":
-                    h = manhattan_heuristic(child.configuration)
-                elif heuristic == "relaxed":
-                    h = relaxed_adjacency_heuristic(child.configuration)
-                else:
-                    raise ValueError("Unknown heuristic")
+            new_g = g_cost + 1 # calculate the new g cost for the child node
 
-                f = new_g + h # calculate the f value for the child node
+            if new_g >= best_g.get(child_state, float("inf")):
+                continue
 
-                heapq.heappush( # put the child node into the priority queue
-                    frontier,
-                    (f, next(tie_breaker), new_g, child)
-                )
+            best_g[child_state] = new_g
+
+            if heuristic == "misplaced": # calculate the heuristic value for the child node
+                h = misplaced_heuristic(child.configuration)
+            elif heuristic == "manhattan":
+                h = manhattan_heuristic(child.configuration)
+            elif heuristic == "relaxed":
+                h = relaxed_adjacency_heuristic(child.configuration)
+            else:
+                raise ValueError("Unknown heuristic")
+
+            f = new_g + h # calculate the f value for the child node
+
+            heapq.heappush( # put the child node into the priority queue
+                frontier,
+                (f, next(tie_breaker), new_g, child)
+            )
 
 
 def misplaced_heuristic(configuration):
@@ -208,26 +220,6 @@ def relaxed_adjacency_heuristic(configuration):
         num_swaps += 1
 
     return num_swaps
-
-
-def possible_boards(board):
-    """
-    Generates all possible board configuration by moving available tiles into the empty space.
-    :param board: the current board configuration
-    :return: the list of possible board configurations
-    """
-    neighbors = []
-
-    empty_tile = board.find_empty_tile()
-    empty_neighbors = board.find_empty_neighbor()
-
-    for neighbor in empty_neighbors:
-        new_board = copy.deepcopy(board)
-        new_board.move_tile(empty_tile, neighbor)
-        neighbors.append(new_board)
-
-    return neighbors
-
 
 if __name__ == "__main__":
     initial_configuration = [
